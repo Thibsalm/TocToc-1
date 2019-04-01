@@ -1,49 +1,57 @@
 <?php
+	session_start();
 
 	$bdd = new PDO('mysql:host=localhost;dbname=espace_membre', 'root', '');
 	
+	$erreur = array();
+
 	if(isset($_POST['forminscription']))
 	{
 		$pseudo = htmlspecialchars($_POST['pseudo']);
 		$mail = htmlspecialchars($_POST['mail']);
 		
-		if(!empty($_POST['pseudo']) AND !empty($_POST['mail']) AND !empty($_POST['mdp']))
+		$can_continue = true;
+
+		if(empty($_POST['pseudo']) OR empty($_POST['mail']) OR empty($_POST['mdp']))
 		{
-			$mdp = sha1($_POST['mdp']);
+			array_push($erreur, "Tous les champs doivent être renseignés !");
+			$can_continue = false;
+		}
+		
+		if(strlen($pseudo) > 255)
+		{
+			array_push($erreur, "Votre pseudo ne peut dépasser les 255 caractères !");
+			$can_continue = false;
+		}
+		
+		if(!filter_var($mail, FILTER_VALIDATE_EMAIL))
+		{
+			array_push($erreur, "Le mail n'est pas valide");
+			$can_continue = false;
+		}
+		
+		if($can_continue == true)
+		{
+			$reqmail = $bdd->prepare("SELECT * FROM MEMBRE WHERE MAIL=?");
+			$reqmail->execute(array($mail));
+			$reqmail->rowCount();
 			
-			if(strlen($pseudo) > 255)
+			$reqpseudo = $bdd->prepare("SELECT * FROM MEMBRE WHERE PSEUDO=?");
+			$reqpseudo->execute(array($pseudo));
+			$reqpseudo->rowCount();
+					
+			if($reqmail->rowCount() > 0 || $reqpseudo->rowCount() > 0)
 			{
-				$erreur = "Votre pseudo ne peut dépasser les 255 caractères !";
+				array_push($erreur, "Pseudo ou adresse mail déjà utilisé");
 			}
 			else
 			{
-				if(!filter_var($mail, FILTER_VALIDATE_EMAIL))
-				{
-					$erreur = "Le mail n'est pas valide";
-				}
-				else
-				{
-					$reqmail = $bdd->prepare("SELECT * FROM MEMBRE WHERE MAIL=?");
-					$reqmail->execture(array($mail));
-					$reqmail->rowCount();
-					
-					if($reqmail->rowCount() > 0)
-					{
-						$erreur = "Cette adresse mail est déjà utilisée";
-					}
-					else
-					{
-						$insertmember = $bdd->prepare("INSERT INTO MEMBRE(pseudo, mail, motdepasse) VALUES(?,?,?)");
-						$insertmember->execute(array($pseudo, $mail, $mdp));
-						$erreur = "Votre compte a bien été créé";
-						header('Location: index.php');
-					}
-				}
+				$mdp = sha1($_POST['mdp']);
+				$insertmember = $bdd->prepare("INSERT INTO MEMBRE(pseudo, mail, motdepasse) VALUES(?,?,?)");
+				$insertmember->execute(array($pseudo, $mail, $mdp));
+				array_push($erreur, "Votre compte a bien été créé");
+				header('Location: index.php');
 			}
-		}
-		else
-		{
-			$erreur = "Tous les champs doivent être renseignés !";
 		}
 	}
 ?>
@@ -55,6 +63,7 @@
 	</head>
 	
 	<body>
+		<script src="insc.js"></script>
 		<div align="center">
 			<h2>Inscription</h2>
 			<br/><br/>
@@ -84,7 +93,15 @@
 							<label for="mdp">Mot de passe :</label>
 						</td>
 						<td>
-							<input type="password" placeholder="Votre mot de passe" id="mdp" name="mdp"/>
+							<input type="password" placeholder="Votre mot de passe" id="mdp" name="mdp" 
+							onchange="myFunction(this.value)"/>
+							<script>
+							function myFunction(val) {
+								if(val == "hello") {
+									document.getElementById("mdp").style.color = 'red';
+							  // alert("The input value has changed. The new value is: " + val);
+							}
+							</script>
 						</td>
 					</tr>
 					<tr>
@@ -96,10 +113,10 @@
 					</tr>
 				</table>
 			</form>
-			<?php 
-				if(isset($erreur))
+			<?php
+				foreach($erreur as $e)
 				{
-					echo $erreur;
+					echo $e . '</br>';
 				}
 			?>
 		
