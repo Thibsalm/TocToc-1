@@ -13,6 +13,7 @@
 	
 	<body>
 		<a href="insc.php"><button>INSCRIPTION</button></a>
+		<a href="connexion.php"><button>CONNEXION</button></a>
 	</body>
 	
 </html>

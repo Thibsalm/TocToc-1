@@ -9,6 +9,7 @@
 	{
 		$pseudo = htmlspecialchars($_POST['pseudo']);
 		$mail = htmlspecialchars($_POST['mail']);
+		$mail2 = htmlspecialchars($_POST['mail2']);
 		
 		$can_continue = true;
 
@@ -29,7 +30,23 @@
 			array_push($erreur, "Le mail n'est pas valide");
 			$can_continue = false;
 		}
+		else if($mail !== $mail2)
+		{
+			array_push($erreur, "Le mail de confirmation ne correspond pas");
+			$can_continue = false;
+		}
 		
+		if($_POST['mdp'] !== $_POST['mdp2'])
+		{
+			array_push($erreur, "Le mot de passe de confirmation ne correspond pas");
+			$can_continue = false;
+		}
+		else if(!preg_match('/[A-Z]/', $_POST['mdp']) OR !preg_match('/[0-9]/', $_POST['mdp']))
+		{
+			array_push($erreur, "Le mot de passe doit contenir au moins une majuscule et un chiffre");
+			$can_continue = false;
+		}	
+
 		if($can_continue == true)
 		{
 			$reqmail = $bdd->prepare("SELECT * FROM MEMBRE WHERE MAIL=?");
@@ -90,6 +107,14 @@
 					</tr>
 					<tr>
 						<td>
+							<label for="mail">Confirmation mail :</label>
+						</td>
+						<td>
+							<input type="text" placeholder="Votre mail" id="mail2" name="mail2"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
 							<label for="mdp">Mot de passe :</label>
 						</td>
 						<td>
@@ -102,6 +127,14 @@
 							  // alert("The input value has changed. The new value is: " + val);
 							}
 							</script>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="mail">Confirmation mot de passe :</label>
+						</td>
+						<td>
+							<input type="password" placeholder="Votre mot de passe" id="mdp2" name="mdp2"/>
 						</td>
 					</tr>
 					<tr>
@@ -119,7 +152,6 @@
 					echo $e . '</br>';
 				}
 			?>
-		
 		</div>
 
 	</body>
