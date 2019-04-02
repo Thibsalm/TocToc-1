@@ -3,10 +3,8 @@ Projet Transverse 2019
 
 # TODO
 Tech :
-- confirmation de mail et mot de passe avec test
 - formulaire de contact (enverra un mail à l'adresse mail de notre site)
-- connexion / déconnexion
-- fiche profil : avec les commentaires etc
+- fiche profil : ajouter les commentaires étoiles points et si notre profil co produits vendus/achetés
 
 - avatar image
 - produits par user
