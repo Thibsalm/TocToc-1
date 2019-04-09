@@ -49,11 +49,11 @@
 
 		if($can_continue == true)
 		{
-			$reqmail = $bdd->prepare("SELECT * FROM MEMBRE WHERE MAIL=?");
+			$reqmail = $bdd->prepare("SELECT * FROM MEMBRES WHERE MAIL=?");
 			$reqmail->execute(array($mail));
 			$reqmail->rowCount();
 			
-			$reqpseudo = $bdd->prepare("SELECT * FROM MEMBRE WHERE PSEUDO=?");
+			$reqpseudo = $bdd->prepare("SELECT * FROM MEMBRES WHERE PSEUDO=?");
 			$reqpseudo->execute(array($pseudo));
 			$reqpseudo->rowCount();
 					
@@ -64,8 +64,10 @@
 			else
 			{
 				$mdp = sha1($_POST['mdp']);
-				$insertmember = $bdd->prepare("INSERT INTO MEMBRE(pseudo, mail, motdepasse) VALUES(?,?,?)");
+				
+				$insertmember = $bdd->prepare("INSERT INTO MEMBRES(pseudo, mail, motdepasse) VALUES(?,?,?)");
 				$insertmember->execute(array($pseudo, $mail, $mdp));
+				
 				array_push($erreur, "Votre compte a bien été créé");
 				header('Location: index.php');
 			}

@@ -12,7 +12,7 @@
 		
 		if(!empty($pseudoconnexion) AND !empty($mdpconnexion))
 		{
-			$requser = $bdd->prepare("SELECT * FROM MEMBRE WHERE PSEUDO=? AND MOTDEPASSE=?");
+			$requser = $bdd->prepare("SELECT * FROM MEMBRES WHERE PSEUDO=? AND MOTDEPASSE=?");
 			$requser->execute(array($pseudoconnexion, $mdpconnexion));
 			
 			if($requser->rowCount() > 0)
