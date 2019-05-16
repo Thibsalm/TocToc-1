@@ -77,7 +77,7 @@
 
 <html>
 	<head>
-		<title>TUTO PHP</title>
+		<title>TUTO PHP 2</title>
 		<meta charset="utf-8">
 	</head>
 	
